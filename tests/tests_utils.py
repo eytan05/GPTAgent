@@ -4,22 +4,21 @@ from utils import extract_python_code
 
 
 @pytest.mark.parametrize(
-    "text,expected_string",
+    "input_text, expected_output",
     [
         (
-            "Here is the Python code to calculate the sum of two numbers:"
-            "```python"
-            "def calculate_sum(a, b):"
-            "    return a + b"
-            "```"
-            "Example Output:"
-            "```"
-            "The sum of 5 and 7 is: 12"
-            "```",
-            "def calculate_sum(a, b):" "    return a + b",
-        )
+            "Here's a Python code:\n```python\ndef add(a, b):\n    return a + b\n```",
+            "def add(a, b):\n    return a + b",
+        ),
+        ("Here's a code:\n```\ndef subtract(a, b):\n    return a - b\n```", ""),
+        (
+            "Here's some Python code:\n```python\ndef multiply(a, b):\n    return a * b\n```\nAnd another one:\n```python\ndef divide(a, b):\n    return a / b\n```",
+            "def multiply(a, b):\n    return a * b\ndef divide(a, b):\n    return a / b",
+        ),
     ],
 )
-def test_extract_python_code(text, expected_string):
-    result_string = extract_python_code(text)
-    assert result_string[0] == expected_string
+def test_extract_python_code(input_text, expected_output):
+    actual_output = extract_python_code(input_text).strip()
+    assert (
+        actual_output == expected_output.strip()
+    ), f"Expected: {expected_output.strip()}, Got: {actual_output}"
