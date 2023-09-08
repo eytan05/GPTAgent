@@ -1,14 +1,16 @@
 from agent import (
     TaskPlanner,
     Agent,
-    GenerateCodeSkill,
-    RunCodeSkill,
-    InstallModuleSkill,
     FinishSkill,
-    GenerateTestCodeSkill,
-    FixCodeSkill,
-    AskForMoreInfoSkill,
 )
+from fix_code import FixCodeSkill
+from fix_test_code import FixTestCodeSkill
+from generate_code import GenerateCodeSkill
+from generate_test_code import GenerateTestCodeSkill
+from install_module import InstallModuleSkill
+from run_code import RunCodeSkill
+from run_test_code import RunTestCodeSkill
+from task_planner import AskForMoreInfoSkill
 from utils import reformulate_request
 
 
@@ -24,6 +26,8 @@ def main():
     )
     agent.add_skill(InstallModuleSkill("install_module", "Installer un module"))
     agent.add_skill(FinishSkill("finish", "Terminer l'exécution"))
+    agent.add_skill(FixTestCodeSkill("fix_test_code", "Corriger le code de test"))
+    agent.add_skill(RunTestCodeSkill("run_test_code", "Exécuter du code de test"))
     user_request = input("Veuillez entrer votre objectif: ")
     general_goal = reformulate_request(user_request)
     agent.execute(general_goal, max_iter=15)

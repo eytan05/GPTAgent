@@ -1,8 +1,17 @@
 import ast
+import importlib
 import re
 from typing import List, Optional
 
 import openai
+
+
+def is_module_installed(module_name: str) -> bool:
+    try:
+        importlib.import_module(module_name)
+        return True
+    except ImportError:
+        return False
 
 
 def extract_imports(filename: str) -> list[str]:
@@ -18,13 +27,11 @@ def extract_imports(filename: str) -> list[str]:
 def get_missing_modules(filename: str) -> list[str]:
     modules = extract_imports(filename)
     missing_modules = []
-
     for module in modules:
         try:
             exec(f"import {module}")
         except ModuleNotFoundError:
             missing_modules.append(module)
-
     return missing_modules
 
 
@@ -38,10 +45,29 @@ def create_python_file(code: str, filename):
         print(f"Erreur lors de la création du fichier {filename} : {e}")
 
 
-def extract_python_code(text: str):
-    pattern = r"```python(.*?)```"
-    matches = re.findall(pattern, text, re.DOTALL)
-    return "\n".join([match.strip() for match in matches])
+def extract_python_code(text):
+    # Recherche des balises de code
+    matches = re.findall(r"```python(.*?)```", text, re.DOTALL)
+    if matches:
+        return matches[0].strip()
+
+    patterns = [
+        r"import .*",
+        r"from .* import .*",
+        r"def .*:",
+        r"class .*:",
+        r"for .* in .*:",
+        r"if .*:",
+        r"elif .*:",
+        r"else:",
+        r"while .*:",
+        r"print(.*",
+    ]
+    code_lines = []
+    for line in text.split("\n"):
+        if any(re.match(pattern, line) for pattern in patterns):
+            code_lines.append(line)
+    return "\n".join(code_lines)
 
 
 def extract_function_name(filename: str) -> Optional[str]:
