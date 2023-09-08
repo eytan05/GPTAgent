@@ -45,8 +45,6 @@ class Agent:
         test_filename = None
         missing_module = None
         while True:
-            print(f"filename={filename}")
-
             if max_iter and iterations >= max_iter:
                 break
 
@@ -64,17 +62,17 @@ class Agent:
                 break
 
             if isinstance(skill, GenerateCodeSkill):
-                feedback = skill.execute(general_goal, filename)
+                feedback += skill.execute(general_goal, filename)
             elif isinstance(skill, RunCodeSkill):
-                feedback = skill.execute(filename)
+                feedback += skill.execute(filename)
                 if "Missing module:" in feedback:
                     missing_module = feedback.split("Missing module:")[-1].strip()
             elif isinstance(skill, FixCodeSkill):
                 if "Error" not in feedback:
-                    feedback = "Le code semble correct, aucune correction nécessaire."
+                    feedback += "Le code semble correct, aucune correction nécessaire."
                     continue
                 else:
-                    feedback = skill.execute(filename, feedback)
+                    feedback += skill.execute(filename, feedback)
             elif isinstance(skill, GenerateTestCodeSkill):
                 result = skill.execute(filename=filename)
                 if isinstance(result, tuple) and len(result) == 2:
@@ -89,15 +87,15 @@ class Agent:
                 if test_feedback is not None and feedback is not None:
                     feedback += f"\n{test_feedback}"
             elif isinstance(skill, AskForMoreInfoSkill):
-                feedback = skill.execute(feedback)
+                feedback += skill.execute(feedback)
             elif isinstance(skill, FixTestCodeSkill):
-                feedback = skill.execute(test_filename, feedback)
+                feedback += skill.execute(test_filename, feedback)
             elif isinstance(skill, RunTestCodeSkill):
-                feedback = skill.execute(test_filename)
+                feedback += skill.execute(test_filename)
                 if "Missing module:" in feedback:
                     missing_module = feedback.split("Missing module:")[-1].strip()
             elif isinstance(skill, InstallModuleSkill):
-                feedback = skill.execute(missing_module)
+                feedback += skill.execute(missing_module)
             self.executed_skills.append(skill.name)
 
             if feedback and (

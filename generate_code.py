@@ -23,8 +23,6 @@ class GenerateCodeSkill(Skill):
                 )
                 openai_response = response.choices[0].message["content"]
                 generated_code = extract_python_code(openai_response)
-                print(f"openai_response = {openai_response}")
-                print(f"generated_code = {generated_code}")
                 create_python_file(generated_code, filename)
                 feedback = f"Code généré avec succès et sauvegardé dans {filename}."
                 return feedback

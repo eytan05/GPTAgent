@@ -19,9 +19,7 @@ class TaskPlanner:
         feedback: str,
     ) -> Skill:
         skill_list_name = [skill.name for skill in skills]
-        executed_skills_str = (
-            ", ".join(executed_skills[-3:]) if executed_skills else "none"
-        )
+        executed_skills_str = ", ".join(executed_skills) if executed_skills else "none"
         summary = (
             f"User's request was: '{general_goal}'. "
             f"The last executed skills were: {executed_skills_str}. "

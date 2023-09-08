@@ -14,8 +14,12 @@ class RunCodeSkill(Skill):
             return "Code executed successfully."
         except Exception as e:
             print(str(e))
-            match = re.search(r"'(.+?)' is not defined", str(e))
-            if match:
-                missing_module = match.group(1)
+            import_error_match = re.search(r"No module named '(.+?)'", str(e))
+            if import_error_match:
+                missing_module = import_error_match.group(1)
+                return f"Error: {str(e)}. Missing module: {missing_module}"
+            name_error_match = re.search(r"'(.+?)' is not defined", str(e))
+            if name_error_match:
+                missing_module = name_error_match.group(1)
                 return f"Error: {str(e)}. Missing module: {missing_module}"
             return f"Error: {str(e)}"
